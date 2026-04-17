@@ -1,5 +1,7 @@
 import pygame
 from player import Player
+from utils import MysteryBox
+import random
 class Game:
     #Параметры экрана
     
@@ -14,6 +16,8 @@ class Game:
         self.FPS = 60
 
         self.running = True
+        
+        
 
         self.player = Player(x = 0,
                              y = 0, 
@@ -21,6 +25,15 @@ class Game:
                              SCREEN_HEIGHT = SCREEN_HEIGHT,
                              animation_speed = 100
                              )
+        self.mysteryBox = MysteryBox(
+                                     x = random.randint(0, SCREEN_WIDTH-24),
+                                     y = random.randint(0, SCREEN_HEIGHT - 24),
+                                     SCREEN_WIDTH = SCREEN_WIDTH, 
+                                     SCREEN_HEIGHT = SCREEN_HEIGHT
+                                    )
+        
+        self.all_sprites = pygame.sprite.Group()
+        self.all_sprites.add(self.mysteryBox)
     def handle_events(self):
         for events in pygame.event.get():
             if events.type == pygame.QUIT:
@@ -36,6 +49,13 @@ class Game:
         #pygame.draw.rect(self.screen, self.player.player_visual, self.player.rect)
         self.screen.blit(self.player.image, self.player.rect)
         
+        if self.mysteryBox.alive():
+            self.screen.blit(self.mysteryBox.box_image, self.mysteryBox.rect)
+
+            if self.player.rect.colliderect(self.mysteryBox.rect):
+                print("Коснулся!")
+                self.mysteryBox.kill()
+            
         pygame.display.flip()
 
     def run(self):

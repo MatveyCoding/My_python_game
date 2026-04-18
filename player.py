@@ -2,19 +2,19 @@ import pygame
 from sprites import GetSprites
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, SCREEN_WIDTH = 500, SCREEN_HEIGHT = 500, animation_speed = 200):
+    def __init__(self, x, y, animation_speed = 100):
     
         # неизменяемые параметры игрока
         self.PLAYER_SIZE = 32
         self.PLAYER_SPEED = 5
-        self.SCREEN_WIDTH = SCREEN_WIDTH
-        self.SCREEN_HEIGHT = SCREEN_HEIGHT
+        self.SCREEN_WIDTH = 500
+        self.SCREEN_HEIGHT = 500
         self.animation_speed = animation_speed
-        # задаём начальное положение игрока
+        # задаём прямоугольник игрока
         self.rect = pygame.Rect(x, y, self.PLAYER_SIZE, self.PLAYER_SIZE)
-        self.speed = self.PLAYER_SPEED
+
         # блок с определением спрайтов
-        self.Sprites =  GetSprites("assets/warrior spritesheet calciumtrice.png", 10)
+        self.Sprites =  GetSprites("assets/warrior spritesheet calciumtrice.png", 10, self.PLAYER_SIZE)
 
         ####СТАТИЧНОЕ ПОЛОЖЕНИЕ
         #Определяем базовое статичное положение игрока(Правое)
@@ -37,6 +37,7 @@ class Player(pygame.sprite.Sprite):
         ###АТАКА
         self.attack_images_right = self.Sprites.get_sprite_frames(row = 3)
         self.attack_images_left = [pygame.transform.flip(image, True, False)  for image in self.attack_images_right]
+        self.attack_cooldown = 1500
 
         #инициализируем любой кадр в качестве первого
         self.number_of_frame = 0
@@ -130,16 +131,16 @@ class Player(pygame.sprite.Sprite):
         self.old_y = self.rect.y
         #задаём движение покоординатно
         if keys[pygame.K_w]:
-            self.rect.y -= self.speed
+            self.rect.y -= self.PLAYER_SPEED
 
         if keys[pygame.K_s]:
-            self.rect.y += self.speed
+            self.rect.y += self.PLAYER_SPEED
 
         if keys[pygame.K_a]:
-            self.rect.x -= self.speed
+            self.rect.x -= self.PLAYER_SPEED
 
         if keys[pygame.K_d]:
-            self.rect.x += self.speed
+            self.rect.x += self.PLAYER_SPEED
         #установим границы движения персонажа
         self.rect.x = max(0, min(self.rect.x, (self.SCREEN_WIDTH - self.PLAYER_SIZE)))
 

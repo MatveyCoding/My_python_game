@@ -1,12 +1,13 @@
 import pygame
 from sprites import GetSprites
+from player import Player 
 
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y, enemy_size, animation_speed = 200):
         super().__init__()
         self.enemy_size = enemy_size
-        self.enemy_speed = 5
+        self.enemy_speed = 2
         #задаём прямоугольик врага
         #self.rect = pygame.Rect(x,y, self.enemy_size, self.enemy_size)
         self.rect = pygame.Rect(x,y, 45, 28)
@@ -15,6 +16,7 @@ class Enemy(pygame.sprite.Sprite):
         self.last_update = pygame.time.get_ticks()
         self.number_of_frame = 6
         self.image = None
+        self.moving_right = False
     
 
            
@@ -25,15 +27,19 @@ class Skeleton(Enemy):
         
         self.PLAYER_SIZE_HEIGHT = 52
         self.PLAYER_SIZE_WIDTH = 31
-        self.Sprites =  GetSprites("assets/skeletons.png", 6, is_square = False)
+        self.Sprites =  GetSprites("assets/skeleton_left.png", 6, is_square = False)
         self.animation_speed = animation_speed
         self.live_status = True
         self.health = 3
-        self.skeleton_images = self.Sprites.get_sprite_frames(row = 0, start_frame = 0, PLAYER_SIZE_HEIGHT = self.PLAYER_SIZE_HEIGHT, PLAYER_SIZE_WIDTH = self.PLAYER_SIZE_WIDTH  )
+        self.skeleton_images_moving_left = self.Sprites.get_sprite_frames(row = 0, start_frame = 0, PLAYER_SIZE_HEIGHT = self.PLAYER_SIZE_HEIGHT, PLAYER_SIZE_WIDTH = self.PLAYER_SIZE_WIDTH)
+        self.skeleton_images_moving_right = [pygame.transform.flip(image, True, False)  for image in self.skeleton_images_moving_left]
+        #данная переменная будет хранить любое состояние
+        self.skeleton_images =  self.skeleton_images_moving_left
         self.image = self.skeleton_images[0]
         self.knockback = False
         self.knockback_velocity = 200
         self.knockback_direction = 1
+        
     def moving_animation(self):
         if not self.skeleton_images:
             return
@@ -41,10 +47,10 @@ class Skeleton(Enemy):
                 #return
         now = pygame.time.get_ticks()
 
-        #if self.moving_right:
-            #self.images = self.moving_images_right
-        # else:
-        # self.images = self.moving_images_left
+        if self.moving_right:
+            self.skeleton_images = self.skeleton_images_moving_right
+        else:
+            self.skeleton_images= self.skeleton_images_moving_left
 
         if (now - self.last_update >= self.animation_speed):
             self.number_of_frame -= 1
@@ -53,14 +59,26 @@ class Skeleton(Enemy):
             self.image = self.skeleton_images[self.number_of_frame]
             self.last_update = now
 
-    def update_skeleton_position(self):
+    def update_skeleton_position(self, rect_x, rect_y):
         if self.knockback:
             self.rect.x += self.knockback_velocity * self.knockback_direction
             self.knockback_velocity *= 0.75
             if abs(self.knockback_velocity) < 0.5:
                 self.knockback = False
+        else:
+            if (rect_x - self.rect.x) > self.enemy_speed:
+                self.moving_right = True
+                self.rect.x += self.enemy_speed
+            elif (rect_x - self.rect.x) < -self.enemy_speed:
+                self.moving_right = False
+                self.rect.x -= self.enemy_speed
+            if (rect_y - self.rect.y) > self.enemy_speed:
+                self.rect.y += self.enemy_speed
+            elif (rect_y - self.rect.y) < -self.enemy_speed:
+                self.rect.y -= self.enemy_speed
+
         
-        self.rect.x -= self.enemy_speed
+        
         #установим границы движения персонажа
         self.rect.x = max(0, min(self.rect.x, (self.SCREEN_WIDTH - self.PLAYER_SIZE_WIDTH )))
         self.rect.y = max(0, min(self.rect.y, (self.SCREEN_HEIGHT - self.PLAYER_SIZE_HEIGHT)))

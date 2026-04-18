@@ -53,7 +53,7 @@ class Game:
     def update(self):
         keys = pygame.key.get_pressed()
         self.player.update_player_position(keys)
-        self.skeleton.update_skeleton_position()
+        self.skeleton.update_skeleton_position(self.player.rect.x, self.player.rect.y)
 
 
 
@@ -80,6 +80,7 @@ class Game:
                 self.mysteryBox.kill()
                 self.box_waiting = True
                 self.mysteryBox.box_respawn_time =  pygame.time.get_ticks()  + self.mysteryBox.box_respawn_delay
+
         ### Логика убийства скелета
         if self.skeleton.alive():  
             self.screen.blit(self.skeleton.image, self.skeleton.rect)   

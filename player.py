@@ -7,9 +7,10 @@ class Player(pygame.sprite.Sprite):
         # неизменяемые параметры игрока
         self.PLAYER_SIZE = 32
         self.PLAYER_SPEED = 5
-        self.SCREEN_WIDTH = 500
-        self.SCREEN_HEIGHT = 500
+        self.SCREEN_WIDTH = 800
+        self.SCREEN_HEIGHT = 800
         self.animation_speed = animation_speed
+        self.health = 5
         # задаём прямоугольник игрока
         self.rect = pygame.Rect(x, y, self.PLAYER_SIZE, self.PLAYER_SIZE)
 
@@ -144,7 +145,7 @@ class Player(pygame.sprite.Sprite):
         #установим границы движения персонажа
         self.rect.x = max(0, min(self.rect.x, (self.SCREEN_WIDTH - self.PLAYER_SIZE)))
 
-        self.rect.y = max(0, min(self.rect.y, (self.SCREEN_HEIGHT - self.PLAYER_SIZE)))
+        self.rect.y = max(0, min(self.rect.y, (self.SCREEN_HEIGHT-80 - self.PLAYER_SIZE)))
 
         self.attack_animation()
         # Потом бег (если не атакует)

@@ -11,8 +11,8 @@ class Enemy(pygame.sprite.Sprite):
         #задаём прямоугольик врага
         #self.rect = pygame.Rect(x,y, self.enemy_size, self.enemy_size)
         self.rect = pygame.Rect(x,y, 45, 28)
-        self.SCREEN_WIDTH  = 500
-        self.SCREEN_HEIGHT = 500
+        self.SCREEN_WIDTH  = 800
+        self.SCREEN_HEIGHT = 800
         self.last_update = pygame.time.get_ticks()
         self.number_of_frame = 6
         self.image = None
@@ -25,13 +25,13 @@ class Skeleton(Enemy):
     def __init__(self, x, y, enemy_size = 45, animation_speed = 200):
         super().__init__(x, y, enemy_size, animation_speed)
         
-        self.PLAYER_SIZE_HEIGHT = 52
-        self.PLAYER_SIZE_WIDTH = 31
+        self.SIZE_HEIGHT = 52
+        self.SIZE_WIDTH = 31
         self.Sprites =  GetSprites("assets/skeleton_left.png", 6, is_square = False)
         self.animation_speed = animation_speed
         self.live_status = True
         self.health = 3
-        self.skeleton_images_moving_left = self.Sprites.get_sprite_frames(row = 0, start_frame = 0, PLAYER_SIZE_HEIGHT = self.PLAYER_SIZE_HEIGHT, PLAYER_SIZE_WIDTH = self.PLAYER_SIZE_WIDTH)
+        self.skeleton_images_moving_left = self.Sprites.get_sprite_frames(row = 0, start_frame = 0, SIZE_HEIGHT = self.SIZE_HEIGHT, SIZE_WIDTH = self.SIZE_WIDTH)
         self.skeleton_images_moving_right = [pygame.transform.flip(image, True, False)  for image in self.skeleton_images_moving_left]
         #данная переменная будет хранить любое состояние
         self.skeleton_images =  self.skeleton_images_moving_left
@@ -39,7 +39,7 @@ class Skeleton(Enemy):
         self.knockback = False
         self.knockback_velocity = 200
         self.knockback_direction = 1
-        
+
     def moving_animation(self):
         if not self.skeleton_images:
             return
@@ -77,11 +77,9 @@ class Skeleton(Enemy):
             elif (rect_y - self.rect.y) < -self.enemy_speed:
                 self.rect.y -= self.enemy_speed
 
-        
-        
         #установим границы движения персонажа
-        self.rect.x = max(0, min(self.rect.x, (self.SCREEN_WIDTH - self.PLAYER_SIZE_WIDTH )))
-        self.rect.y = max(0, min(self.rect.y, (self.SCREEN_HEIGHT - self.PLAYER_SIZE_HEIGHT)))
+        self.rect.x = max(0, min(self.rect.x, (self.SCREEN_WIDTH - self.SIZE_WIDTH )))
+        self.rect.y = max(0, min(self.rect.y, (self.SCREEN_HEIGHT - self.SIZE_HEIGHT)))
         
         self.moving_animation()
 
